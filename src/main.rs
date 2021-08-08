@@ -6,11 +6,19 @@ use serenity::framework::standard::{
     CommandResult,
     macros::{
         command,
-        group
-    }
+        group,
+    },
 };
 
+use rbatis::rbatis::Rbatis;
+
 use std::env;
+use lazy_static::lazy_static;
+
+lazy_static! {
+  // Rbatis is thread-safe, and the runtime method is Send+Sync. there is no need to worry about thread contention
+  static ref RB:Rbatis=Rbatis::new();
+}
 
 #[group]
 #[commands(ping)]
@@ -24,18 +32,22 @@ impl EventHandler for Handler {}
 #[tokio::main]
 async fn main() {
     env_logger::init();
+    // Login with a bot token from the environment
+    let token = env::var("DISCORD_TOKEN").expect("token");
+
+    let db_url = env::var("DATABASE_URL").expect("database url");
 
     let framework = StandardFramework::new()
         .configure(|c| c.prefix("~")) // set the bot's prefix to "~"
         .group(&GENERAL_GROUP);
 
-    // Login with a bot token from the environment
-    let token = env::var("DISCORD_TOKEN").expect("token");
     let mut client = Client::builder(token)
         .event_handler(Handler)
         .framework(framework)
         .await
         .expect("Error creating client");
+
+    RB.link(&db_url).await.unwrap();
 
     // start listening for events by starting a single shard
     if let Err(why) = client.start().await {
