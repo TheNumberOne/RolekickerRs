@@ -23,6 +23,8 @@ impl EventHandler for Handler {}
 
 #[tokio::main]
 async fn main() {
+    env_logger::init();
+
     let framework = StandardFramework::new()
         .configure(|c| c.prefix("~")) // set the bot's prefix to "~"
         .group(&GENERAL_GROUP);
