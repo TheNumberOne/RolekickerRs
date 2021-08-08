@@ -1,6 +1,6 @@
-
 use std::env;
-use log::{info, error};use openssl::ssl::{SslConnector, SslMethod};
+use log::{info, error};
+use openssl::ssl::{SslConnector, SslMethod, SslVerifyMode};
 use postgres_openssl::MakeTlsConnector;
 
 mod migrations;
@@ -10,7 +10,8 @@ async fn main() {
     env_logger::init();
 
     let db_url = env::var("DATABASE_URL").expect("database url");
-    let builder = SslConnector::builder(SslMethod::tls()).expect("ssl");
+    let mut builder = SslConnector::builder(SslMethod::tls()).expect("ssl");
+    builder.set_verify(SslVerifyMode::NONE);
     let connector = MakeTlsConnector::new(builder.build());
 
     let (mut client, connection) =
