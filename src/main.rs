@@ -17,7 +17,7 @@ use lazy_static::lazy_static;
 
 lazy_static! {
   // Rbatis is thread-safe, and the runtime method is Send+Sync. there is no need to worry about thread contention
-  static ref RB:Rbatis=Rbatis::new();
+  static ref RB:Rbatis = Rbatis::new();
 }
 
 #[group]

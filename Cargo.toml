@@ -16,6 +16,8 @@ rbatis = { version = "2", default-features = false, features = ["tokio1", "postg
 tokio = { version = "1", features = ["full"] }
 lazy_static = "1"
 refinery = { version = "0.6", features = ["tokio-postgres"] }
+postgres-openssl = "0.5"
+openssl = "0.10"
 
 [[bin]]
 name = "role_kicker_bot"

@@ -1,7 +1,7 @@
-use tokio_postgres::NoTls;
 
 use std::env;
-use log::{info, error};
+use log::{info, error};use openssl::ssl::{SslConnector, SslMethod};
+use postgres_openssl::MakeTlsConnector;
 
 mod migrations;
 
@@ -10,8 +10,11 @@ async fn main() {
     env_logger::init();
 
     let db_url = env::var("DATABASE_URL").expect("database url");
+    let builder = SslConnector::builder(SslMethod::tls()).expect("ssl");
+    let connector = MakeTlsConnector::new(builder.build());
+
     let (mut client, connection) =
-        tokio_postgres::connect(&db_url, NoTls).await.expect("Can connect to db");
+        tokio_postgres::connect(&db_url, connector).await.expect("Can connect to db");
 
     tokio::spawn(async move {
         if let Err(e) = connection.await {
