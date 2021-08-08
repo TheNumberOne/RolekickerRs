@@ -1,1 +1,1 @@
-service: ./target/release/rust-api
+service: ./target/release/role_kicker_bot
